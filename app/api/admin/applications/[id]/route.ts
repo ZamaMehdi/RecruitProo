@@ -5,13 +5,14 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const { id } = params;
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
     const application = await prisma.application.findUnique({
       where: { id },
       include: {
