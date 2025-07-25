@@ -67,8 +67,7 @@ interface Profile {
 }
 
 export default function EditProfileForm({ profile }: { profile: Profile }) {
-  console.log("PROFILE PROP:", profile);
-  if (!profile) return <div>Loading profile...</div>;
+  // Move all useState hooks to the top
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     name: profile?.name || "",
@@ -94,6 +93,10 @@ export default function EditProfileForm({ profile }: { profile: Profile }) {
   const [editingWorkIdx, setEditingWorkIdx] = useState<number | null>(null);
   const [workEditDraft, setWorkEditDraft] = useState<typeof emptyWork | null>(null);
   const [linkError, setLinkError] = useState("");
+
+  if (!profile) {
+    return <div>Loading profile...</div>;
+  }
 
   const validateEducation = (ed: typeof emptyEducation) => {
     return (
