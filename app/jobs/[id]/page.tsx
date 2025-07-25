@@ -47,7 +47,6 @@ export default function JobDetailsPage() {
   const [submitError, setSubmitError] = useState("");
   const [success, setSuccess] = useState("");
   const [fileError, setFileError] = useState("");
-  const [resumeUrl, setResumeUrl] = useState("");
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -71,7 +70,6 @@ export default function JobDetailsPage() {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, qid: string) => {
     setFileError("");
-    setResumeUrl("");
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.type !== "application/pdf") {
@@ -93,7 +91,6 @@ export default function JobDetailsPage() {
       });
       const data = await res.json();
       if (data.secure_url) {
-        setResumeUrl(data.secure_url);
         setForm((prev) => ({ ...prev, [`file_${qid}`]: data.secure_url }));
       } else {
         setFileError("Failed to upload file.");
@@ -132,7 +129,6 @@ export default function JobDetailsPage() {
       if (!res.ok) throw new Error(data.error || "Failed to submit application");
       setSuccess("Application submitted successfully!");
       setForm({});
-      setResumeUrl("");
     } catch (err) {
       setSubmitError((err as Error).message);
     }
@@ -153,7 +149,7 @@ export default function JobDetailsPage() {
       </div>
       <h2 className="text-lg font-semibold mb-2">Apply for this job</h2>
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {job.customQuestions.map((q, idx) => (
+        {job.customQuestions.map((q) => (
           <div key={q.id}>
             <label className="block mb-1 font-medium">
               {q.question} {q.required && <span className="text-red-600">*</span>}

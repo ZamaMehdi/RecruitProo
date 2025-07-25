@@ -11,6 +11,33 @@ interface ApplicationWithJob extends Application {
   job: Job | null;
 }
 
+// Define local interfaces for Education and WorkExperience to match Profile
+interface Education {
+  school: string;
+  degree: string;
+  fieldOfStudy: string;
+  startDate: string;
+  endDate: string;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+}
+interface WorkExperience {
+  title: string;
+  employmentType: string;
+  company: string;
+  currentRole: boolean;
+  startDate: string;
+  endDate: string;
+  description: string;
+  isCurrent: boolean;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+}
+
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session || !session.user) {
@@ -46,8 +73,8 @@ export default async function DashboardPage() {
         name: profile.name ?? undefined,
         github: profile.github ?? undefined,
         portfolio: profile.portfolio ?? undefined,
-        education: Array.isArray(profile.education) ? (profile.education as any[]) : [],
-        workExperience: Array.isArray(profile.workExperience) ? (profile.workExperience as any[]) : [],
+        education: Array.isArray(profile.education) ? (profile.education as unknown as Education[]) : [],
+        workExperience: Array.isArray(profile.workExperience) ? (profile.workExperience as unknown as WorkExperience[]) : [],
         phone: profile.phone ?? undefined,
       }
     : null;
