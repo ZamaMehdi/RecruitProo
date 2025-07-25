@@ -1,0 +1,46 @@
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+
+const prisma = new PrismaClient();
+
+export async function POST(request: Request, context: { params: { id: string } }) {
+  const { params } = context;
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const userId = session.user.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID missing in session.' }, { status: 400 });
+    }
+    const jobId = params.id;
+    const body = await request.json();
+    const { answers, resumeUrl } = body;
+    // Check if user already applied
+    const existing = await prisma.application.findFirst({ where: { userId, jobId } });
+    if (existing) {
+      return NextResponse.json({ error: 'You have already applied to this job.' }, { status: 409 });
+    }
+    // Create application
+    const application = await prisma.application.create({
+      data: {
+        userId,
+        jobId,
+        resumeUrl,
+        answers: {
+          create: answers.map((a: any) => ({
+            customQuestionId: a.customQuestionId,
+            answer: a.answer,
+          })),
+        },
+      },
+      include: { answers: true },
+    });
+    return NextResponse.json({ message: 'Application submitted successfully', application }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+} 

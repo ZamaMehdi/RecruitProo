@@ -25,8 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
       >
+        <nav className="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200 py-3 px-6 flex items-center justify-between">
+          <div className="text-2xl font-extrabold tracking-tight text-blue-700 select-none">
+            RecruitPro
+          </div>
+          {/* You can add more nav items or user info here if needed */}
+        </nav>
         {children}
       </body>
     </html>
