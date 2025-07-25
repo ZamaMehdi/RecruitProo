@@ -37,6 +37,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
     return NextResponse.json(application);
   } catch (error) {
+    // Log the error for debugging
+    console.error("Failed to fetch application:", error);
     return NextResponse.json({ error: 'Failed to fetch application' }, { status: 500 });
   }
 } 

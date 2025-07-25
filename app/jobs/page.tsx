@@ -1,5 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
+
+interface Job {
+  id: string;
+  title: string;
+  department: string;
+  location: string;
+  salary?: string;
+  createdAt: string;
+}
 
 async function fetchJobs() {
   const baseUrl =
@@ -12,8 +22,8 @@ async function fetchJobs() {
 }
 
 export default function JobsPage() {
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [filteredJobs, setFilteredJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [department, setDepartment] = useState("");
@@ -124,7 +134,7 @@ export default function JobsPage() {
                 <td className="py-2 px-3">{job.salary || "-"}</td>
                 <td className="py-2 px-3">{new Date(job.createdAt).toLocaleDateString()}</td>
                 <td className="py-2 px-3">
-                  <a href={`/jobs/${job.id}`} className="text-blue-600 hover:underline">View</a>
+                  <Link href={`/jobs/${job.id}`} className="text-blue-600 hover:underline">View</Link>
                 </td>
               </tr>
             ))}

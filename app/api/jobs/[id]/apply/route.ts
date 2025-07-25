@@ -31,7 +31,7 @@ export async function POST(request: Request, context: { params: { id: string } }
         jobId,
         resumeUrl,
         answers: {
-          create: answers.map((a: any) => ({
+          create: (answers as Array<{ customQuestionId: string; answer: string }>).map((a) => ({
             customQuestionId: a.customQuestionId,
             answer: a.answer,
           })),
@@ -41,6 +41,7 @@ export async function POST(request: Request, context: { params: { id: string } }
     });
     return NextResponse.json({ message: 'Application submitted successfully', application }, { status: 201 });
   } catch (error) {
+    console.error("Application submission error:", error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 

@@ -1,8 +1,13 @@
 import React from "react";
 import { getSession } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Job as PrismaJob, Application } from "@prisma/client";
+import Link from "next/link";
 
 const prisma = new PrismaClient();
+
+interface Job extends PrismaJob {
+  applications: Application[];
+}
 
 export default async function AdminJobsPage() {
   const session = await getSession();
@@ -13,7 +18,7 @@ export default async function AdminJobsPage() {
     return <div className="text-red-600">Admin email missing in session.</div>;
   }
 
-  let jobs: any[] = [];
+  let jobs: Job[] = [];
   let error = "";
   try {
     jobs = await prisma.job.findMany({
@@ -21,8 +26,8 @@ export default async function AdminJobsPage() {
       include: { customQuestions: true, applications: true },
       orderBy: { createdAt: "desc" },
     });
-  } catch (err: any) {
-    error = err.message;
+  } catch (err) {
+    error = (err as Error).message;
   }
 
   return (
@@ -56,7 +61,7 @@ export default async function AdminJobsPage() {
               <td className="py-2 px-3">{job.applications.length}</td>
               <td className="py-2 px-3">{new Date(job.createdAt).toLocaleDateString()}</td>
               <td className="py-2 px-3">
-                <a href={`/admin/jobs/${job.id}/edit`} className="text-blue-600 hover:underline">Edit</a>
+                <Link href={`/admin/jobs/${job.id}/edit`} className="text-blue-600 hover:underline">Edit</Link>
               </td>
             </tr>
           ))}

@@ -33,14 +33,47 @@ const employmentTypes = [
   "Full-time", "Part-time", "Internship", "Contract", "Freelance", "Temporary", "Other"
 ];
 
-export default function EditProfileForm({ profile }: { profile: any }) {
+interface Education {
+  school: string;
+  degree: string;
+  fieldOfStudy: string;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+}
+
+interface WorkExperience {
+  title: string;
+  employmentType: string;
+  company: string;
+  isCurrent: boolean;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+  description: string;
+}
+
+interface Profile {
+  id: string;
+  name?: string;
+  email: string;
+  education: Education[];
+  workExperience: WorkExperience[];
+  phone?: string;
+  github?: string;
+  portfolio?: string;
+}
+
+export default function EditProfileForm({ profile }: { profile: Profile }) {
   console.log("PROFILE PROP:", profile);
   if (!profile) return <div>Loading profile...</div>;
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     name: profile?.name || "",
-    education: Array.isArray(profile?.education) ? profile.education : [],
-    workExperience: Array.isArray(profile?.workExperience) ? profile.workExperience : [],
+    education: Array.isArray(profile?.education) ? profile.education as Education[] : [],
+    workExperience: Array.isArray(profile?.workExperience) ? profile.workExperience as WorkExperience[] : [],
     phone: profile?.phone || "",
     github: profile?.github || "",
     portfolio: profile?.portfolio || "",
@@ -87,7 +120,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
     setShowEduForm(false);
     setEduError("");
   };
-  const removeEducation = (idx: number) => setForm({ ...form, education: form.education.filter((_: any, i: number) => i !== idx) });
+  const removeEducation = (idx: number) => setForm({ ...form, education: form.education.filter((_: Education, i: number) => i !== idx) });
 
   const startEditEducation = (idx: number) => {
     setEditingEduIdx(idx);
@@ -103,7 +136,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
       setEduError("Please fill all required fields.");
       return;
     }
-    const updated = form.education.map((ed: any, i: number) => i === editingEduIdx ? { ...eduEditDraft } : ed);
+    const updated = form.education.map((ed: Education, i: number) => i === editingEduIdx ? { ...eduEditDraft } : ed);
     setForm({ ...form, education: updated });
     setEditingEduIdx(null);
     setEduEditDraft(null);
@@ -140,7 +173,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
     setShowWorkForm(false);
     setWorkError("");
   };
-  const removeWork = (idx: number) => setForm({ ...form, workExperience: form.workExperience.filter((_: any, i: number) => i !== idx) });
+  const removeWork = (idx: number) => setForm({ ...form, workExperience: form.workExperience.filter((_: WorkExperience, i: number) => i !== idx) });
 
   const startEditField = (field: string) => {
     setEditingField(field);
@@ -180,7 +213,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
       setWorkError("Please fill all required fields.");
       return;
     }
-    const updated = form.workExperience.map((w: any, i: number) => i === editingWorkIdx ? { ...workEditDraft } : w);
+    const updated = form.workExperience.map((w: WorkExperience, i: number) => i === editingWorkIdx ? { ...workEditDraft } : w);
     setForm({ ...form, workExperience: updated });
     setEditingWorkIdx(null);
     setWorkEditDraft(null);
@@ -221,7 +254,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
           <div><b>Email:</b> {profile.email}</div>
           <div><b>Education:</b>
             {form.education.length === 0 && <div className="ml-2 text-gray-500">No education added.</div>}
-            {form.education.map((ed: any, idx: number) => (
+            {form.education.map((ed: Education, idx: number) => (
               <div key={idx} className="ml-2 p-2 border rounded mb-2 bg-white relative">
                 {editing ? (
                   editingEduIdx === idx ? (
@@ -276,7 +309,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
           </div>
           <div><b>Work Experience:</b>
             {form.workExperience.length === 0 && <div className="ml-2 text-gray-500">No work experience added.</div>}
-            {form.workExperience.map((w: any, i: number) => (
+            {form.workExperience.map((w: WorkExperience, i: number) => (
               <div key={i} className="ml-2 p-2 border rounded mb-2 bg-white">
                 <div className="font-bold">{w.title}</div>
                 <div>{w.company}</div>
@@ -320,7 +353,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
       </div>
       <div>
         <label className="block mb-1">Education</label>
-        {form.education.map((ed: any, idx: number) => (
+        {form.education.map((ed: Education, idx: number) => (
           <div key={idx} className="mb-2 flex flex-col gap-1 border rounded p-2 bg-white relative">
             {editingEduIdx === idx ? (
               <div>
@@ -401,7 +434,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
       </div>
       <div>
         <label className="block mb-1">Work Experience</label>
-        {form.workExperience.map((w: any, idx: number) => (
+        {form.workExperience.map((w: WorkExperience, idx: number) => (
           <div key={idx} className="mb-2 flex flex-col gap-1 border rounded p-2 bg-white relative">
             {editingWorkIdx === idx ? (
               <div>

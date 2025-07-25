@@ -5,6 +5,27 @@ import { useParams } from "next/navigation";
 const CLOUDINARY_UPLOAD_PRESET = "recruitpro_unsigned";
 const CLOUDINARY_CLOUD_NAME = "dbpanvj73";
 
+interface CustomQuestion {
+  id: string;
+  question: string;
+  type: string;
+  required: boolean;
+}
+
+interface Job {
+  id: string;
+  title: string;
+  department: string;
+  location: string;
+  salary?: string;
+  status: string;
+  customQuestions: CustomQuestion[];
+}
+
+interface FormState {
+  [key: string]: string;
+}
+
 async function fetchJob(id: string) {
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL ||
@@ -12,17 +33,17 @@ async function fetchJob(id: string) {
     "http://localhost:3000";
   const res = await fetch(`${baseUrl}/api/jobs`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch jobs");
-  const jobs = await res.json();
-  return jobs.find((job: any) => job.id === id);
+  const jobs: Job[] = await res.json();
+  return jobs.find((job) => job.id === id);
 }
 
 export default function JobDetailsPage() {
   const params = useParams();
   const jobId = Array.isArray(params.id) ? params.id[0] : params.id;
-  const [job, setJob] = useState<any>(null);
+  const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [form, setForm] = useState<any>({});
+  const [form, setForm] = useState<FormState>({});
   const [submitError, setSubmitError] = useState("");
   const [success, setSuccess] = useState("");
   const [fileError, setFileError] = useState("");
@@ -36,7 +57,7 @@ export default function JobDetailsPage() {
       return;
     }
     fetchJob(jobId)
-      .then(setJob)
+      .then((job) => setJob(job ?? null))
       .catch(() => setError("Job not found"))
       .finally(() => setLoading(false));
   }, [jobId]);
@@ -73,7 +94,7 @@ export default function JobDetailsPage() {
       const data = await res.json();
       if (data.secure_url) {
         setResumeUrl(data.secure_url);
-        setForm((prev: any) => ({ ...prev, [`file_${qid}`]: data.secure_url }));
+        setForm((prev) => ({ ...prev, [`file_${qid}`]: data.secure_url }));
       } else {
         setFileError("Failed to upload file.");
       }
@@ -89,18 +110,18 @@ export default function JobDetailsPage() {
     setSubmitError("");
     setSuccess("");
     // Check if any FILE question is required and not uploaded
-    const missingFile = job.customQuestions.some((q: any) => q.type === "FILE" && q.required && !form[`file_${q.id}`]);
+    const missingFile = job.customQuestions.some((q) => q.type === "FILE" && q.required && !form[`file_${q.id}`]);
     if (missingFile) {
       setSubmitError("Please upload the required file(s).");
       return;
     }
     try {
-      const answers = job.customQuestions.map((q: any) => ({
+      const answers = job.customQuestions.map((q) => ({
         customQuestionId: q.id,
         answer: q.type === "FILE" ? form[`file_${q.id}`] || "" : form[`q_${q.id}`] || "",
       }));
       // If there's a FILE question, set resumeUrl to the first file answer
-      const fileQ = job.customQuestions.find((q: any) => q.type === "FILE");
+      const fileQ = job.customQuestions.find((q) => q.type === "FILE");
       const resumeUrlToSend = fileQ ? form[`file_${fileQ.id}`] : undefined;
       const res = await fetch(`/api/jobs/${job.id}/apply`, {
         method: "POST",
@@ -112,8 +133,8 @@ export default function JobDetailsPage() {
       setSuccess("Application submitted successfully!");
       setForm({});
       setResumeUrl("");
-    } catch (err: any) {
-      setSubmitError(err.message);
+    } catch (err) {
+      setSubmitError((err as Error).message);
     }
   };
 
@@ -132,7 +153,7 @@ export default function JobDetailsPage() {
       </div>
       <h2 className="text-lg font-semibold mb-2">Apply for this job</h2>
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {job.customQuestions.map((q: any, idx: number) => (
+        {job.customQuestions.map((q, idx) => (
           <div key={q.id}>
             <label className="block mb-1 font-medium">
               {q.question} {q.required && <span className="text-red-600">*</span>}

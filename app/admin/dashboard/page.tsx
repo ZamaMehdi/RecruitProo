@@ -1,9 +1,14 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Job as PrismaJob, Application } from "@prisma/client";
 import DashboardShell from "@/components/DashboardShell";
+import Link from "next/link";
 
 const prisma = new PrismaClient();
+
+interface Job extends PrismaJob {
+  applications: Application[];
+}
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
@@ -18,16 +23,16 @@ export default async function AdminDashboardPage() {
   }
 
   // Fetch jobs directly from Prisma
-  const jobs = await prisma.job.findMany({
+  const jobs: Job[] = await prisma.job.findMany({
     where: { adminEmail: session.user.email },
     include: { customQuestions: true, applications: true },
     orderBy: { createdAt: "desc" },
   });
   const totalJobs = jobs.length;
-  const statusCounts = jobs.reduce((acc: any, job: any) => {
+  const statusCounts: Record<string, number> = jobs.reduce((acc, job) => {
     acc[job.status] = (acc[job.status] || 0) + 1;
     return acc;
-  }, {});
+  }, {} as Record<string, number>);
 
   return (
     <DashboardShell>
@@ -45,14 +50,14 @@ export default async function AdminDashboardPage() {
             {Object.entries(statusCounts).map(([status, count]) => (
               <div key={status} className="bg-gradient-to-r from-emerald-500 to-teal-400 text-white rounded-xl p-6 shadow flex flex-col items-center">
                 <div className="text-lg font-semibold">{status.charAt(0) + status.slice(1).toLowerCase()}</div>
-                <div className="text-3xl font-extrabold mt-2">{count}</div>
+                <div className="text-3xl font-extrabold mt-2">{Number(count)}</div>
               </div>
             ))}
           </div>
           <div className="bg-gray-50 rounded-lg p-6 shadow-inner">
             <div className="font-semibold mb-2 text-gray-700">Applicants per Job</div>
             <ul className="divide-y divide-gray-200">
-              {jobs.map((job: any) => (
+              {jobs.map((job) => (
                 <li key={job.id} className="py-2 flex justify-between items-center">
                   <span className="font-medium text-gray-900">{job.title}</span>
                   <span className="text-gray-600">{job.applications.length} applicant{job.applications.length === 1 ? "" : "s"}</span>
@@ -61,9 +66,9 @@ export default async function AdminDashboardPage() {
             </ul>
           </div>
           <div className="flex flex-wrap gap-4 justify-end">
-            <a href="/admin/jobs/new" className="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition shadow">+ Create New Job</a>
-            <a href="/admin/applications" className="bg-green-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-green-700 transition shadow">View Applications</a>
-            <a href="/admin/jobs" className="bg-purple-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-purple-700 transition shadow">View & Edit Jobs</a>
+            <Link href="/admin/jobs/new" className="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition shadow">+ Create New Job</Link>
+            <Link href="/admin/applications" className="bg-green-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-green-700 transition shadow">View Applications</Link>
+            <Link href="/admin/jobs" className="bg-purple-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-purple-700 transition shadow">View & Edit Jobs</Link>
           </div>
         </div>
       </div>

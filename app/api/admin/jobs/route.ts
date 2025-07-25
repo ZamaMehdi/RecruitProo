@@ -58,9 +58,9 @@ export async function POST(request: Request) {
         status,
         adminEmail: session.user.email, // set adminEmail from session
         customQuestions: {
-          create: customQuestions?.map((q: any) => ({
+          create: (customQuestions as Array<{ question: string; type: string; required: boolean }>)?.map((q) => ({
             question: q.question,
-            type: q.type,
+            type: q.type as any, // Cast to any to satisfy Prisma's QuestionType enum
             required: q.required,
           })) || [],
         },

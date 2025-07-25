@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignupPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "APPLICANT" });
@@ -29,8 +30,8 @@ export default function SignupPage() {
       setSuccess("Registration successful! You can now sign in.");
       setForm({ name: "", email: "", password: "", role: "APPLICANT" });
       setTimeout(() => router.push("/auth/signin"), 1500);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -97,7 +98,7 @@ export default function SignupPage() {
         </button>
       </form>
       <p className="mt-4 text-center text-sm">
-        Already have an account? <a href="/auth/signin" className="text-blue-600 hover:underline">Sign in</a>
+        Already have an account? <Link href="/auth/signin" className="text-blue-600 hover:underline">Sign in</Link>
       </p>
     </div>
   );

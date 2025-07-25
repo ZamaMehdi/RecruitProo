@@ -18,6 +18,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
     return NextResponse.json(job);
   } catch (error) {
+    console.error("Failed to fetch job:", error);
     return NextResponse.json({ error: 'Failed to fetch job' }, { status: 500 });
   }
 }
@@ -42,6 +43,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     });
     return NextResponse.json(updated);
   } catch (error) {
+    console.error("Failed to update job:", error);
     return NextResponse.json({ error: 'Failed to update job' }, { status: 500 });
   }
 } 

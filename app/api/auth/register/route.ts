@@ -28,6 +28,7 @@ export async function POST(request: Request) {
     });
     return NextResponse.json({ message: 'User registered successfully', user: { id: user.id, email: user.email, role: user.role } }, { status: 201 });
   } catch (error) {
+    console.error("User registration error:", error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 

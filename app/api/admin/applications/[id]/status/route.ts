@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, ApplicationStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
@@ -22,6 +22,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     });
     return NextResponse.json(updated);
   } catch (error) {
+    console.error("Failed to update status:", error);
     return NextResponse.json({ error: 'Failed to update status' }, { status: 500 });
   }
 } 

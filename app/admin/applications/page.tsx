@@ -23,9 +23,43 @@ async function updateStatus(id: string, status: string) {
   return res.json();
 }
 
+interface User {
+  id: string;
+  name?: string | null;
+  email: string;
+}
+
+interface Job {
+  id: string;
+  title: string;
+}
+
+interface Answer {
+  id: string;
+  customQuestion: { question: string };
+  answer: string;
+}
+
+interface ActionLog {
+  id: string;
+  action: string;
+  timestamp: string;
+}
+
+interface Application {
+  id: string;
+  user: User;
+  job: Job;
+  status: string;
+  resumeUrl?: string | null;
+  createdAt: string;
+  answers?: Answer[];
+  actionLogs?: ActionLog[];
+}
+
 export default function AdminApplicationsPage() {
-  const [applications, setApplications] = useState<any[]>([]);
-  const [filtered, setFiltered] = useState<any[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [filtered, setFiltered] = useState<Application[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -34,7 +68,7 @@ export default function AdminApplicationsPage() {
   const [page, setPage] = useState(1);
   const [updating, setUpdating] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [expandedData, setExpandedData] = useState<any | null>(null);
+  const [expandedData, setExpandedData] = useState<Application | null>(null);
   const [expandedLoading, setExpandedLoading] = useState(false);
   const [expandedError, setExpandedError] = useState("");
 
@@ -207,16 +241,16 @@ export default function AdminApplicationsPage() {
                   </select>
                 </td>
               </tr>,
-              expandedId === app.id && (
+              expandedId === app.id && expandedData && expandedData.id === app.id && (
                 <tr key={app.id + "-expanded"}>
                   <td colSpan={7} className="bg-gray-50 px-6 py-4">
                     {expandedLoading && <div>Loading answers...</div>}
                     {expandedError && <div className="text-red-600">{expandedError}</div>}
-                    {expandedData && expandedData.answers && expandedData.answers.length > 0 ? (
+                    {expandedData.answers && expandedData.answers.length > 0 ? (
                       <div>
                         <div className="font-semibold mb-2">Applicant Answers:</div>
                         <ul className="list-disc ml-6">
-                          {expandedData.answers.map((ans: any) => (
+                          {expandedData.answers.map((ans) => (
                             <li key={ans.id} className="mb-1">
                               <span className="font-medium">{ans.customQuestion.question}:</span> {ans.answer || <span className="italic text-gray-500">No answer</span>}
                             </li>
@@ -224,11 +258,11 @@ export default function AdminApplicationsPage() {
                         </ul>
                       </div>
                     ) : expandedData && <div className="italic text-gray-500">No answers submitted.</div>}
-                    {expandedData && expandedData.actionLogs && expandedData.actionLogs.length > 0 && (
+                    {expandedData.actionLogs && expandedData.actionLogs.length > 0 && (
                       <div className="mt-4">
                         <div className="font-semibold mb-2">Action Logs:</div>
                         <ul className="list-disc ml-6">
-                          {expandedData.actionLogs.map((log: any) => (
+                          {expandedData.actionLogs.map((log) => (
                             <li key={log.id} className="mb-1">
                               <span className="font-medium">{log.action}</span> at {new Date(log.timestamp).toLocaleString()}
                             </li>

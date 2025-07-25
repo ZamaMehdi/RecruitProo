@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 
 type CustomQuestion = {
   question: string;
@@ -29,11 +30,11 @@ export default function NewJobPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleQuestionChange = (idx: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleQuestionChange = (idx: number, e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const updated = [...form.customQuestions];
     const name = e.target.name as keyof CustomQuestion;
     let value: string | boolean = e.target.type === "checkbox" ? e.target.checked : e.target.value;
@@ -56,7 +57,7 @@ export default function NewJobPage() {
     setForm({ ...form, customQuestions: form.customQuestions.filter((_, i) => i !== idx) });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -78,8 +79,8 @@ export default function NewJobPage() {
         status: "ACTIVE",
         customQuestions: [{ ...defaultQuestion }],
       });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }

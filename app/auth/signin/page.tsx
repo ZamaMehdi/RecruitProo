@@ -2,13 +2,14 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function SigninPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams(); // Remove unused variable
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -67,7 +68,7 @@ export default function SigninPage() {
         </button>
       </form>
       <p className="mt-4 text-center text-sm">
-        Don&apos;t have an account? <a href="/auth/signup" className="text-blue-600 hover:underline">Sign up</a>
+        Don&apos;t have an account? <Link href="/auth/signup" className="text-blue-600 hover:underline">Sign up</Link>
       </p>
     </div>
   );

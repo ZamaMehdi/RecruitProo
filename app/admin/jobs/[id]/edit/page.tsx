@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import type { ChangeEvent, FormEvent } from "react";
 
 export default function EditJobPage() {
   const router = useRouter();
@@ -39,11 +40,11 @@ export default function EditJobPage() {
       });
   }, [jobId]);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -58,7 +59,7 @@ export default function EditJobPage() {
       setSuccess("Job updated successfully!");
       router.refresh();
     } catch (err: any) {
-      setError(err.message);
+      setError((err as Error).message);
     }
   };
 
