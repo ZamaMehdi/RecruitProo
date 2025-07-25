@@ -12,11 +12,7 @@ interface Job {
 }
 
 async function fetchJobs() {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-    "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/jobs`, { cache: "no-store" });
+  const res = await fetch('/api/jobs', { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch jobs");
   return res.json();
 }

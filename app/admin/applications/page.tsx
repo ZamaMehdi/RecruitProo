@@ -4,11 +4,7 @@ import React, { useEffect, useState } from "react";
 const PAGE_SIZE = 10;
 
 async function fetchApplications() {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-    "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/admin/applications`, { cache: "no-store" });
+  const res = await fetch('/api/admin/applications', { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch applications");
   return res.json();
 }
