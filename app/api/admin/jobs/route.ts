@@ -60,7 +60,7 @@ export async function POST(request: Request) {
         customQuestions: {
           create: (customQuestions as Array<{ question: string; type: string; required: boolean }>)?.map((q) => ({
             question: q.question,
-            type: q.type as any, // Cast to any to satisfy Prisma's QuestionType enum
+            type: q.type as import('@prisma/client').QuestionType, // Cast to QuestionType to satisfy Prisma's enum
             required: q.required,
           })) || [],
         },

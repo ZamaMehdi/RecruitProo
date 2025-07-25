@@ -130,7 +130,7 @@ export default function JobDetailsPage() {
       setSuccess("Application submitted successfully!");
       setForm({});
     } catch (err) {
-      setSubmitError((err as Error).message);
+      setSubmitError(err instanceof Error ? err.message : String(err));
     }
   };
 

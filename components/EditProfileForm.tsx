@@ -237,8 +237,8 @@ export default function EditProfileForm({ profile }: { profile: Profile }) {
       if (!res.ok) throw new Error("Failed to update profile");
       setSuccess("Profile updated successfully!");
       setEditing(false);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }

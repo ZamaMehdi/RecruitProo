@@ -126,8 +126,8 @@ export default function AdminApplicationsPage() {
           app.id === id ? { ...app, status: newStatus } : app
         )
       );
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err) {
+      if (err instanceof Error) alert(err.message);
     } finally {
       setUpdating(null);
     }
@@ -148,8 +148,8 @@ export default function AdminApplicationsPage() {
       if (!res.ok) throw new Error("Failed to fetch application details");
       const data = await res.json();
       setExpandedData(data);
-    } catch (err: any) {
-      setExpandedError(err.message);
+    } catch (err) {
+      setExpandedError(err instanceof Error ? err.message : String(err));
       setExpandedData(null);
     } finally {
       setExpandedLoading(false);
