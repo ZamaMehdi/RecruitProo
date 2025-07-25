@@ -1,25 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
+// app/api/admin/applications/[id]/status/route.ts
+
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import type { NextApiRequest } from 'next';
-import type { NextRequest as VercelNextRequest } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function PATCH(
-  req: VercelNextRequest,
-  { params }: { params: { id: string } }
-) {
+type Context = {
+  params: {
+    id: string;
+  };
+};
+
+export async function PATCH(request: NextRequest, { params }: Context) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user || session.user.role !== 'ADMIN') {
+
+    if (!session || session.user?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { status } = await req.json();
+    const { status } = await request.json();
 
-    if (!['PENDING', 'ACCEPTED', 'REJECTED', 'ON_HOLD'].includes(status)) {
+    const validStatuses = ['PENDING', 'ACCEPTED', 'REJECTED', 'ON_HOLD'];
+    if (!validStatuses.includes(status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
@@ -28,9 +34,9 @@ export async function PATCH(
       data: { status },
     });
 
-    return NextResponse.json(updated);
+    return NextResponse.json(updated, { status: 200 });
   } catch (error) {
-    console.error('Failed to update status:', error);
-    return NextResponse.json({ error: 'Failed to update status' }, { status: 500 });
+    console.error('Failed to update application status:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
