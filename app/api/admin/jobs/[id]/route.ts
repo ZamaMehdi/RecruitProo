@@ -5,13 +5,14 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const { id } = params;
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
     const job = await prisma.job.findUnique({ where: { id } });
     if (!job) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -23,13 +24,14 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const { id } = params;
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
     const data = await req.json();
     const updated = await prisma.job.update({
       where: { id },

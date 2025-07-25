@@ -5,16 +5,16 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: Request) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const url = new URL(request.url);
+    const id = url.pathname.split('/').slice(-2, -1)[0];
 
     const { status } = await request.json();
 
@@ -23,7 +23,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.application.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
     });
 
