@@ -34,14 +34,14 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
-        token.role = (user as any).role;
+        (token as JWT & { role?: string }).role = (user as User & { role?: string }).role;
       }
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (token && session.user) {
-        (session.user as any).role = (token as any).role;
-        (session.user as any).id = token.sub; // Ensure user id is included in session
+        (session.user as typeof session.user & { role?: string; id?: string }).role = (token as JWT & { role?: string }).role;
+        (session.user as typeof session.user & { role?: string; id?: string }).id = token.sub;
       }
       return session;
     },

@@ -211,7 +211,7 @@ export default function AdminApplicationsPage() {
                 <td colSpan={7} className="py-4 text-center text-gray-500">No applications found.</td>
               </tr>
             )}
-            {paginated.map(app => [
+            {paginated.map((app: Application) => [
               <tr key={app.id} className="border-t cursor-pointer hover:bg-gray-50" onClick={() => handleExpand(app.id)}>
                 <td className="py-2 px-3 font-medium">{app.user.name || "-"}</td>
                 <td className="py-2 px-3">{app.user.email}</td>
@@ -250,7 +250,7 @@ export default function AdminApplicationsPage() {
                       <div>
                         <div className="font-semibold mb-2">Applicant Answers:</div>
                         <ul className="list-disc ml-6">
-                          {expandedData.answers.map((ans) => (
+                          {expandedData.answers.map((ans: Answer) => (
                             <li key={ans.id} className="mb-1">
                               <span className="font-medium">{ans.customQuestion.question}:</span> {ans.answer || <span className="italic text-gray-500">No answer</span>}
                             </li>

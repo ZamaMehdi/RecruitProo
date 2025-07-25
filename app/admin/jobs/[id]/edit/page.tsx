@@ -58,7 +58,7 @@ export default function EditJobPage() {
       if (!res.ok) throw new Error(data.error || "Failed to update job");
       setSuccess("Job updated successfully!");
       router.refresh();
-    } catch (err: any) {
+    } catch (err) {
       setError((err as Error).message);
     }
   };

@@ -178,9 +178,9 @@ export default function EditProfileForm({ profile }: { profile: Profile }) {
   };
   const removeWork = (idx: number) => setForm({ ...form, workExperience: form.workExperience.filter((_: WorkExperience, i: number) => i !== idx) });
 
-  const startEditField = (field: string) => {
+  const startEditField = (field: keyof typeof form) => {
     setEditingField(field);
-    setFieldDraft((form as any)[field]);
+    setFieldDraft(form[field] as string);
   };
   const cancelEditField = () => {
     setEditingField(null);
