@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import type { NextApiRequest } from 'next';
+import type { NextRequest as VercelNextRequest } from 'next/server';
 
 const prisma = new PrismaClient();
 
 export async function PATCH(
-  req: NextRequest,
-  context: { params: { id: string } }
+  req: VercelNextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,7 +17,6 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = context.params.id;
     const { status } = await req.json();
 
     if (!['PENDING', 'ACCEPTED', 'REJECTED', 'ON_HOLD'].includes(status)) {
@@ -23,7 +24,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.application.update({
-      where: { id },
+      where: { id: params.id },
       data: { status },
     });
 
